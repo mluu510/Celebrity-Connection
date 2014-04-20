@@ -19,7 +19,7 @@ end
 
 
 def celeb_friends?(celeb1, celeb2)
-	# Use BFS to find if two celeb have ever co-starred
+	# Use BFS to find if two celeb have have a connection
 	first_node = Node.new(celeb1)
 
 	open = [first_node]
@@ -27,30 +27,25 @@ def celeb_friends?(celeb1, celeb2)
 
 	until open.empty?
 		celeb_node = open.shift
-		closed << celeb_node
-
-		# puts celeb_node.val
+		closed << celeb_node.val
 
 		# Get list of costars
 		costars = costars_of(celeb_node.val)
 
 		costars.each do |costar|
-			costar_node = Node.new(costar, celeb_node)
-
 			# Check if costar is the target
 			if costar == celeb2
 				puts "Searched #{closed.count} times."
-				return construct_path(costar_node)
+				return construct_path(Node.new(costar, celeb_node))
 			end
-
-			if closed.include?(costar_node)
-				puts "Already checked"
-			else
-				
-				open << costar_node 
-			end
+	
+			open << Node.new(costar, celeb_node) unless closed.include?(costar)
+					
 		end
-		debugger
+
+		if closed.count % 1000 == 0
+			puts "Searching..."
+		end
 
 	end
 	puts "Couldn't find a connection between #{celeb1} and #{celeb2}. Searched #{closed.count} times."
@@ -107,4 +102,4 @@ end
 
 random_celebs = random_celebs(2)
 puts "Is #{random_celebs.first} connected to #{random_celebs.last}?"
-# p celeb_friends?(*random_celebs)
+p celeb_friends?(*random_celebs)
